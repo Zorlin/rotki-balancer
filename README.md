@@ -1,6 +1,8 @@
 # rotki-balancer
 Rotki Balancer is a simple Python3 script I am writing to solve a problem of mine.
 
+🚧 UNDER CONSTRUCTION - DO NOT USE YET WITHOUT SUPERVISION 🚧
+
 I have a simple system for "allocating" funds to different cryptos, in terms of percentages I intend to hold of those cryptos.
 
 I would like to be able to say that my assets should look like this:

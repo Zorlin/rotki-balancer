@@ -13,13 +13,27 @@ and from there, be told what trades I need to execute to reach an intended total
 
 The idea is over time this tool will help to build a balanced portfolio.
 
+## Features
+In development:
+* 🚧 Load a list of assets from your config file and what allocations you have chosen
+* 🚧 Load your balances from Rotki, filtered for just Blockchain assets
+* 🚧 Calculate the total value of your assets
+* 🚧 Ask for the total value you wish your allocation to be
+    * If you are currently unbalanced, it will show you what to do to balance your portfolio. This works even if your total value doesn't change.
+    * We may consider adding an option to tell you what to sell, but for now it will simply tell you the best trades to make to even out your allocation.
+    * If you are already balanced, it will tell you how much you need to invest to reach your desired allocation.
+* 🚧 Calculate the difference between your current allocation and your desired allocation
+
+Planned features:
+* Net worth mode: Calculate trades needed to reach your chosen allocation for your entire net worth in Rotki (as opposed to just your chosen assets). Net worth mode may be buggy if your desired allocation and your assets in Rotki cannot be reconciled to 100%.
+
 ## Disclaimer(s)
 This tool should not be relied on for financial advice. Always check what you are doing!
 
 Rotki is not my product, nor my trademark.
 
 ## Usage
-* Configure rotki-balancer by copying config.yml.dist to config.yml
+* Configure rotki-balancer by copying config.yml.dist to config.yml and customising it
 * `cd` to this directory
 * Run `python3 balancer.py`
 

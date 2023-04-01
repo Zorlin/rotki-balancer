@@ -1,0 +1,11 @@
+---
+asset_allocations:
+  - {asset: btc, allocation: 50}
+  - {asset: eth, allocation: 25}
+  - {asset: doge, allocation: 25}
+
+debug_mode: true
+ 
+# Here be dragons! Feature flags for experimental cruft.
+experimental:
+  net_worth_mode: false

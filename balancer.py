@@ -47,6 +47,14 @@ def main():
     logging.debug("[DEBUG] Config file:")
     logging.debug(config_data)
 
+    # Check if the total percentage allocation of each asset in the config file adds up to 100%
+    total_allocation = 0
+    for allocation in config_data["asset_allocations"]:
+        total_allocation += allocation['allocation']
+    if total_allocation != 100:
+        logging.error("The total percentage allocation of all assets in the config file must add up to 100%.")
+        sys.exit()
+
     held_asset_balances = load_balances_from_rotki()
 
     #logging.debug("[DEBUG] Held asset balances:")
@@ -88,25 +96,97 @@ def main():
     for asset_name, asset in held_asset_balances.items():
         current_total_value += float(asset['usd_value'])
 
-    print("DEBUGX: " + str(held_asset_balances))
-    logging.info("Current total value held: " + str(current_total_value) + " USD")
+    # Debug: Print the held asset balances now that we filtered it
+    logging.debug("[DEBUG] Printing held asset balances")
+    logging.debug(held_asset_balances)
+    logging.info("Current total value held: {:.{}f} USD".format(current_total_value, config_data["floating_precision"]))
 
-    # # Ask the user if they want to hold a different total value
-    # while True:
-    #     new_total_value = input("Enter the new total value you want to hold (in USD), or press [ENTER] to use your existing total: ")
-    #     if new_total_value.lower() == "q":
-    #         # User has chosen to quit
-    #         sys.exit()
-    #     elif new_total_value == "":
-    #         # User has chosen to use their existing total value and just rebalance their portfolio.
-    #         new_total_value = current_total_value
-    #         break
-    #     try:
-    #         new_total_value = float(new_total_value)
-    #         break
-    #     except ValueError:
-    #         print("Invalid input. Please enter a valid total value in USD, or enter 'q' to quit.")
-    
+    # Print the current amounts and allocations
+    logging.info("Current asset allocations:")
+    for allocation in config_data["asset_allocations"]:
+        asset_name = allocation['asset']
+        asset_amount = held_asset_balances[asset_name]['amount']
+        asset_usd_value = float(held_asset_balances[asset_name]['usd_value'])
+        asset_allocation = round(asset_usd_value / current_total_value * 100, 2)
+        logging.info(f"{asset_name}: {float(asset_amount):.{config_data['floating_precision']}f} ({asset_allocation}%) ({asset_usd_value:.{config_data['floating_precision']}f} USD)")
+
+    # Ask the user if they want to hold a different total value
+    while True:
+        new_total_value = input("Enter the new total value you want to hold (in USD), or press [ENTER] to use your existing total: ")
+        if new_total_value.lower() == "q":
+            # User has chosen to quit
+            sys.exit()
+        elif new_total_value == "":
+            # User has chosen to use their existing total value and just rebalance their portfolio.
+            new_total_value = current_total_value
+            break
+        try:
+            new_total_value = float(new_total_value)
+            break
+        except ValueError:
+            print("Invalid input. Please enter a valid total value in USD, or enter 'q' to quit.")
+
+    # Figure out our target values of what assets *should* be allocated as
+    target_values = {}
+    for target in config_data["asset_allocations"]:
+        asset = target['asset']
+        allocation = target['allocation'] / 100.0
+        target_values[asset] = allocation * new_total_value
+
+    # Calculate the difference between the current value in USD and the target_value in USD for each asset
+    differences = {}
+    for allocation in config_data["asset_allocations"]:
+        # Existing assets
+        asset_name = allocation['asset']
+        asset_amount = held_asset_balances[asset_name]['amount']
+        asset_usd_value = float(held_asset_balances[asset_name]['usd_value'])
+        # The current allocation percentage of this asset based on the new total value we are targeting
+        asset_allocation = round(asset_usd_value / new_total_value * 100, 2)
+
+        # If Bitcoin is at 59.31% and our target percentage is 25%, then we are 34.31% overallocated on Bitcoin
+        # If Bitcoin is at 25% and our target percentage is 59.31%, then we are 34.31% underallocated on Bitcoin
+        difference_percentage = round(allocation['allocation'] - asset_allocation, 2)
+        difference_usd = round(target_values[asset_name] - asset_usd_value, 2)
+        if difference_percentage > 0:
+            logging.info(f"{asset_name} is underallocated by {difference_percentage}% of total asset value (Underallocated by {difference_usd} USD)")
+        elif difference_percentage < 0:
+            logging.info(f"{asset_name} is overallocated by {abs(difference_percentage)}% of total asset value (Overallocated by {- difference_usd} USD)")
+ 
+    logging.info("Let's work out a strategy:")
+
+    if config_data["experimental"]["selling_is_okay"]:
+        # It's okay to sell assets, so let's make everything perfectly even.
+        for allocation in config_data["asset_allocations"]:
+            # Existing assets
+            asset_name = allocation['asset']
+            asset_amount = held_asset_balances[asset_name]['amount']
+            asset_usd_value = float(held_asset_balances[asset_name]['usd_value'])
+            # The current allocation percentage of this asset based on the new total value we are targeting
+            asset_allocation = round(asset_usd_value / new_total_value * 100, 2)
+
+            # If Bitcoin is at 59.31% and our target percentage is 25%, then we are 34.31% overallocated on Bitcoin
+            # If Bitcoin is at 25% and our target percentage is 59.31%, then we are 34.31% underallocated on Bitcoin
+            difference_percentage = round(allocation['allocation'] - asset_allocation, 2)
+            difference_usd = round(target_values[asset_name] - asset_usd_value, 2)
+            if difference_percentage < 0:
+                logging.info(f"{asset_name} is overallocated. You should sell { - difference_usd} USD worth of it.")
+            elif difference_percentage > 0:
+                logging.info(f"{asset_name} is underallocated. You should buy { difference_usd} USD worth of it.")
+
+    else:
+        # We can't sell assets. Let's work out how much we can spend:
+        # 1. Calculate the total amount of USD we can spend on buying assets
+        total_budget = new_total_value - current_total_value
+        if total_budget < 0:
+            logging.info("You can't spend any money right now, because you have more assets than you want to hold.")
+            sys.exit()
+        elif total_budget == 0:
+            logging.info("You can't spend any money right now, because you already have as much total value as you want to hold.")
+            sys.exit()
+        else:
+            logging.info(f"You can spend {total_budget} USD on buying assets.")
+        print("A strategy for correcting allocations without selling is not available yet.")
+
 
 if __name__ == "__main__":
     main()

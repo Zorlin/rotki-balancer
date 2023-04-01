@@ -26,6 +26,11 @@ In development:
 
 Planned features:
 * Net worth mode: Calculate trades needed to reach your chosen allocation for your entire net worth in Rotki (as opposed to just your chosen assets). Net worth mode may be buggy if your desired allocation and your assets in Rotki cannot be reconciled to 100%.
+* Overall allocation mode: Tell us how much of your portfolio you want in crypto, and we'll adjust your crypto allocation to match.
+* (MAYBE) Support for other asset types in Rotki (e.g. Fiat, DeFi, etc)
+
+## Bugs/antifeatures
+* ERC20 tokens and NFTs are not supported yet, and no support is yet planned. Some day though!
 
 ## Disclaimer(s)
 This tool should not be relied on for financial advice. Always check what you are doing!

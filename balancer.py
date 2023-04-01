@@ -91,21 +91,21 @@ def main():
     print("DEBUGX: " + str(held_asset_balances))
     logging.info("Current total value held: " + str(current_total_value) + " USD")
 
-    # Ask the user if they want to hold a different total value
-    while True:
-        new_total_value = input("Enter the new total value you want to hold (in USD), or press [ENTER] to use your existing total: ")
-        if new_total_value.lower() == "q":
-            # User has chosen to quit
-            sys.exit()
-        elif new_total_value == "":
-            # User has chosen to use their existing total value and just rebalance their portfolio.
-            new_total_value = current_total_value
-            break
-        try:
-            new_total_value = float(new_total_value)
-            break
-        except ValueError:
-            print("Invalid input. Please enter a valid total value in USD, or enter 'q' to quit.")
+    # # Ask the user if they want to hold a different total value
+    # while True:
+    #     new_total_value = input("Enter the new total value you want to hold (in USD), or press [ENTER] to use your existing total: ")
+    #     if new_total_value.lower() == "q":
+    #         # User has chosen to quit
+    #         sys.exit()
+    #     elif new_total_value == "":
+    #         # User has chosen to use their existing total value and just rebalance their portfolio.
+    #         new_total_value = current_total_value
+    #         break
+    #     try:
+    #         new_total_value = float(new_total_value)
+    #         break
+    #     except ValueError:
+    #         print("Invalid input. Please enter a valid total value in USD, or enter 'q' to quit.")
     
 
 if __name__ == "__main__":

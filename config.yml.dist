@@ -4,7 +4,10 @@ asset_allocations:
   - {asset: eth, allocation: 25}
   - {asset: doge, allocation: 25}
 
-debug_mode: true
+# Turn on debug features
+debug_mode: false
+# Set number of decimal places, used only for display (not calculations
+floating_precision: 2
  
 # Here be dragons! Feature flags for experimental cruft.
 experimental:

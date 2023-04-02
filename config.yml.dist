@@ -9,3 +9,4 @@ debug_mode: true
 # Here be dragons! Feature flags for experimental cruft.
 experimental:
   net_worth_mode: false
+  okay_to_sell: true # Must be true for now

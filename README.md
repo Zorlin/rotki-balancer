@@ -1,30 +1,29 @@
 # rotki-balancer
 Rotki Balancer is a simple Python3 script I am writing to solve a problem of mine.
 
-🚧 UNDER CONSTRUCTION - DO NOT USE YET WITHOUT SUPERVISION 🚧
+This is EARLY STAGE SOFTWARE, but ready for basic testing.
 
 I have a simple system for "allocating" funds to different cryptos, in terms of percentages I intend to hold of those cryptos.
 
-I would like to be able to say that my assets should look like this:
+I would like to be able to say that my assets should look like this, as an example:
 * 40% Bitcoin
 * 20% Ethereum
 * 10% Dogecoin
 * 40% Tezos
 
 and from there, be told what trades I need to execute to reach an intended total value.
-
 The idea is over time this tool will help to build a balanced portfolio.
 
 ## Features
 In development:
-* 🚧 Load a list of assets from your config file and what allocations you have chosen
+* Load a list of assets from your config file and what allocations you have chosen
+* Load your balances from Rotki, filtered for just the asset allocations you care about
 * 🚧 Load your balances from Rotki, filtered for just Blockchain assets
-* 🚧 Calculate the total value of your assets
-* 🚧 Ask for the total value you wish your allocation to be
+* Calculate the total value of your assets
+* Ask for the total value you wish your allocation to be
     * If you are currently unbalanced, it will show you what to do to balance your portfolio. This works even if your total value doesn't change.
-    * We may consider adding an option to tell you what to sell, but for now it will simply tell you the best trades to make to even out your allocation.
     * If you are already balanced, it will tell you how much you need to invest to reach your desired allocation.
-* 🚧 Calculate the difference between your current allocation and your desired allocation
+* Calculate the differences between your current allocation and your desired allocation
 
 Planned features:
 * Net worth mode: Calculate trades needed to reach your chosen allocation for your entire net worth in Rotki (as opposed to just your chosen assets). Net worth mode may be buggy if your desired allocation and your assets in Rotki cannot be reconciled to 100%.

@@ -1,7 +1,8 @@
 # rotki-balancer
 Rotki Balancer is a simple Python3 script I am writing to solve a problem of mine.
 
-This is EARLY STAGE SOFTWARE, but ready for basic testing.
+This is EARLY STAGE SOFTWARE, but ready for basic testing. Here's what it looks like:
+[![asciicast](https://asciinema.org/a/7g7uA6LfALlWAVSyjWEDOmKjc.svg)](https://asciinema.org/a/7g7uA6LfALlWAVSyjWEDOmKjc)
 
 I have a simple system for "allocating" funds to different cryptos, in terms of percentages I intend to hold of those cryptos.
 

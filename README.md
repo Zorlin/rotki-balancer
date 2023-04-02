@@ -18,7 +18,6 @@ The idea is over time this tool will help to build a balanced portfolio.
 In development:
 * Load a list of assets from your config file and what allocations you have chosen
 * Load your balances from Rotki, filtered for just the asset allocations you care about
-* 🚧 Load your balances from Rotki, filtered for just Blockchain assets
 * Calculate the total value of your assets
 * Ask for the total value you wish your allocation to be
     * If you are currently unbalanced, it will show you what to do to balance your portfolio. This works even if your total value doesn't change.
@@ -26,6 +25,7 @@ In development:
 * Calculate the differences between your current allocation and your desired allocation
 
 Planned features:
+* 🚧 Load your balances from Rotki, filtered for just Blockchain assets
 * Net worth mode: Calculate trades needed to reach your chosen allocation for your entire net worth in Rotki (as opposed to just your chosen assets). Net worth mode may be buggy if your desired allocation and your assets in Rotki cannot be reconciled to 100%.
 * Overall allocation mode: Tell us how much of your portfolio you want in crypto, and we'll adjust your crypto allocation to match.
 * (MAYBE) Support for other asset types in Rotki (e.g. Fiat, DeFi, etc)

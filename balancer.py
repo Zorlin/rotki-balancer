@@ -25,7 +25,7 @@ def setup_logging():
 def load_balances_from_rotki():
     logging.info("Loading asset balances from Rotki...")
     try:
-        response = requests.get('http://localhost:4242/api/1/balances', headers={'Content-Type': 'application/json;charset=UTF-8'}, json={'async_query': False, 'ignore_cache': True})
+        response = requests.get('http://localhost:4242/api/1/balances', headers={'Content-Type': 'application/json;charset=UTF-8'}, json={'async_query': False})
         response.raise_for_status()  # Raise an error if the response status code is not ok
         balances = response.json()['result']['assets']
         return balances

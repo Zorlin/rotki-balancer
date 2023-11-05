@@ -8,8 +8,11 @@ asset_allocations:
 debug_mode: false
 # Set number of decimal places, used only for display (not calculations
 floating_precision: 2
- 
+
+# Only buy assets, do not suggest selling assets
+buy_only_mode: false
+
 # Here be dragons! Feature flags for experimental cruft.
 experimental:
-  net_worth_mode: false
+  net_worth_mode: false # Unimplemented
   okay_to_sell: true # Must be true for now

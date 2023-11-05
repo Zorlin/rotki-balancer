@@ -4,6 +4,7 @@ import yaml
 import logging
 import requests
 import sys
+import random
 
 # Load config file from current directory
 with open("config.yml", 'r') as stream:
@@ -14,10 +15,14 @@ with open("config.yml", 'r') as stream:
 
 # Set up logging
 def setup_logging():
+    # Depending on mode, set INFO or DEBUG logging
     if not config_data["debug_mode"]:
         logging.basicConfig(level=logging.INFO, format='%(message)s')
     else:
         logging.basicConfig(level=logging.DEBUG, format='%(message)s')
+    # Suppress the logging output of the requests library
+    logging.getLogger("requests").setLevel(logging.ERROR)
+    logging.getLogger("urllib3").setLevel(logging.ERROR)
 
 # Load asset balances from Rotki
 def load_balances_from_rotki():
@@ -33,6 +38,67 @@ def load_balances_from_rotki():
         logging.error(f"Failed to load assets from Rotki: {e}")
         return {}
 
+# Load prices from Rotki, used purely for simulations
+def load_prices_from_rotki(assets):
+    prices = {}
+
+    # Convert asset symbols to uppercase for Rotki API request
+    uppercase_assets = [asset.upper() for asset in assets]
+
+    try:
+        # Request the latest prices for all assets at once
+        response = requests.post(
+            'http://localhost:4242/api/1/assets/prices/latest', 
+            headers={'Content-Type': 'application/json;charset=UTF-8'},
+            json={
+                "assets": uppercase_assets,
+                "ignore_cache": True,
+                "target_asset": "USD"
+            }
+        )
+        response.raise_for_status()
+        asset_data = response.json()['result']['assets']
+        
+        for asset, data in asset_data.items():
+            # The price data is the first item in the list, so we extract that
+            prices[asset.lower()] = float(data[0])
+                
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Failed to load prices from Rotki: {e}")
+
+    return prices
+
+# Simulate balances instead
+def simulate_balances_from_config():
+    # We're pretending, as we don't want the output to look any different.
+    logging.info("Loading asset balances from Rotki...")
+    
+    # Simulate a total USD value between $50,000 and $200,000, rounded to the nearest 100
+    total_usd_value = round(random.uniform(50000, 200000))
+
+    # Directly generate deviated percentages based on the original allocation and ensure they sum up to 100%
+    original_percentages = [allocation['allocation'] for allocation in config_data["asset_allocations"]]
+    max_deviation = 0.20  # 20%
+    deviated_percentages = [p + (random.uniform(-p * max_deviation, p * max_deviation)) for p in original_percentages]
+    normalization_factor = 100 / sum(deviated_percentages)
+    normalized_percentages = [dp * normalization_factor for dp in deviated_percentages]
+
+    # Fetch real asset prices
+    asset_names = [allocation['asset'] for allocation in config_data["asset_allocations"]]
+    asset_prices = load_prices_from_rotki(asset_names)
+
+    simulated_balances = {}
+    for i, allocation in enumerate(config_data["asset_allocations"]):
+        asset_name = allocation['asset']
+        deviated_usd_value = (normalized_percentages[i] / 100.0) * total_usd_value
+        simulated_amount = deviated_usd_value / asset_prices[asset_name]
+        simulated_balances[asset_name.upper()] = {
+            'amount': str(simulated_amount),
+            'usd_value': float(deviated_usd_value)
+        }
+
+    return simulated_balances
+
 def main():
     # Setup logging
     setup_logging()
@@ -45,7 +111,10 @@ def main():
         logging.error("The total percentage allocation of all assets in the config file must add up to 100%.")
         sys.exit()
 
-    held_asset_balances = load_balances_from_rotki()
+    if not config_data.get("simulation_mode", False):
+        held_asset_balances = load_balances_from_rotki()
+    else:
+        held_asset_balances = simulate_balances_from_config()
 
     # Filter out ERC20 and NFT assets
     held_asset_balances = {
@@ -68,7 +137,7 @@ def main():
             asset_name = custom_rules[asset_name_normalized]
         config_data["asset_allocations"][i]['asset'] = asset_name
 
-    # Filter the list of held_asset_balances to only include the assets we're interested in
+    # Filter out assets we are not interested in
     held_asset_balances = {
         asset_name: asset
         for asset_name, asset in held_asset_balances.items()

@@ -79,7 +79,7 @@ def simulate_balances_from_config():
     # Directly generate deviated percentages based on the original allocation and ensure they sum up to 100%
     original_percentages = [allocation['allocation'] for allocation in config_data["asset_allocations"]]
     max_deviation = 2  # 20%
-    deviated_percentages = [p + (random.uniform(-p * max_deviation, p * max_deviation)) for p in original_percentages]
+    deviated_percentages = [p + (random.uniform(-min(p, p * max_deviation), p * max_deviation)) for p in original_percentages]
     normalization_factor = 100 / sum(deviated_percentages)
     normalized_percentages = [dp * normalization_factor for dp in deviated_percentages]
 

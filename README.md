@@ -1,49 +1,58 @@
 # rotki-balancer
-Rotki Balancer is a simple Python3 script I am writing to solve a problem of mine.
+Rotki Balancer is a simple Python script for balancing your crypto portfolio according to your own rules.
 
-This is EARLY STAGE SOFTWARE, but ready for basic testing. Here's what it looks like:
+Here's what it looks like:
 [![asciicast](https://asciinema.org/a/7g7uA6LfALlWAVSyjWEDOmKjc.svg)](https://asciinema.org/a/7g7uA6LfALlWAVSyjWEDOmKjc)
 
-I have a simple system for "allocating" funds to different cryptos, in terms of percentages I intend to hold of those cryptos.
+I have a simple system for "allocating" funds to different cryptocurrencies. I assign a percentage to each one, which is how much I intend to hold of those cryptos.
 
-I would like to be able to say that my assets should look like this, as an example:
+I can say that my assets should look like:
 * 40% Bitcoin
 * 20% Ethereum
 * 10% Dogecoin
 * 40% Tezos
 
 and from there, be told what trades I need to execute to reach an intended total value.
-The idea is over time this tool will help to build a balanced portfolio.
+
+The idea is that with regular use over time, this tool will help to build a balanced portfolio.
 
 ## Features
-In development:
-* Load a list of assets from your config file and what allocations you have chosen
-* Load your balances from Rotki, filtered for just the asset allocations you care about
+Features:
+* Simulation mode: Want to show off or test Rotki without any actual assets? Simply write your config, then set simulation_mode: true, and Rotki Balancer will use randomised simulated balances (within 20% of your allocation).
+* Allocation management - Buy only mode/Buy and sell mode
+   * Buy only: Are you a long term holder? Turn on buy-only mode and Rotki Balancer will tell you how to get as close to your allocation as possible without selling anything.
+   * Buy-and-sell: Balancer will tell you what to buy and sell to reach a perfectly balanced portfolio.
+     * 🚧 In buy-and-sell mode, make sure to enter a desired held value of at least $1 higher than what you have, to make sure the Balancer still tells you buys and sells.
 * Calculate the total value of your assets
-* Ask for the total value you wish your allocation to be
-    * If you are currently unbalanced, it will show you what to do to balance your portfolio. This works even if your total value doesn't change.
-    * If you are already balanced, it will tell you how much you need to invest to reach your desired allocation.
-* Calculate the differences between your current allocation and your desired allocation
 
+## Bugs/antifeatures
+* ERC20 tokens and NFTs are not supported yet, but I want to implement that "soon".
+
+## Usage
+Before using Rotki, ensure you have the "requests" and "pyyaml" Python modules installed (`pip3 install requests pyyaml`)
+
+Then:
+* Clone rotki-balancer from GitHub and put it somewhere safe
+* Configure rotki-balancer by copying config.yml.dist to config.yml and customising it
+* `cd` to the directory you cloned Rotki Balancer into
+* Run `python3 balancer.py`
+
+## Roadmap
 Planned features:
-* 🚧 Load your balances from Rotki, filtered for just Blockchain assets
+* 🚧 In progress: Load your balances from Rotki, filtered for just Blockchain assets
 * Net worth mode: Calculate trades needed to reach your chosen allocation for your entire net worth in Rotki (as opposed to just your chosen assets). Net worth mode may be buggy if your desired allocation and your assets in Rotki cannot be reconciled to 100%.
 * Overall allocation mode: Tell us how much of your portfolio you want in crypto, and we'll adjust your crypto allocation to match.
 * (MAYBE) Support for other asset types in Rotki (e.g. Fiat, DeFi, etc)
-
-## Bugs/antifeatures
-* ERC20 tokens and NFTs are not supported yet, and no support is yet planned. Some day though!
+* Add support for ERC20 + NFT assets
 
 ## Disclaimer(s)
 This tool should not be relied on for financial advice. Always check what you are doing!
 
 Rotki is not my product, nor my trademark.
 
-## Usage
-* Configure rotki-balancer by copying config.yml.dist to config.yml and customising it
-* `cd` to this directory
-* Run `python3 balancer.py`
-
 ## Licence and Credits
 Copyright © Benjamin Arntzen & Raptors With Hats.
-Made available with ❤️ under the MIT Licence.
+
+Made available with ❤️ under the MIT Licence. 
+
+In other words - you may use this software for any purpose you wish, commercial or personal, and take it apart and study it and share it - essentially whatever you want as long as you give credit!
